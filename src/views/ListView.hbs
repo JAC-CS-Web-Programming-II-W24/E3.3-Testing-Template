@@ -1,6 +1,6 @@
 {{> Header }}
 
-<h1>All Pokeymanz</h1>
+<h1>All Pokemon</h1>
 
 {{# unless pokemon }}
 <p>No Pokemon in the database! Please add one first.</p>
@@ -16,7 +16,7 @@
 		{{# each pokemon }}
 		<tr pokemon-id="{{ id }}">
 			<td>
-				<a href="{{ path 'pokemon/:id' id }}" class="{{ name }}">
+				<a href="http://localhost:3000/pokemon/{{ id }}" class="{{ name }}">
 					{{ name }}
 				</a>
 			</td>

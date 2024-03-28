@@ -5,13 +5,13 @@ import { renderTemplate } from "./view";
 export const getHome = async (req: IncomingMessage, res: ServerResponse) => {
   res.statusCode = 200;
   res.setHeader("Content-Type", "text/html");
-  res.end(await renderTemplate("src/views/HomeView.hbs"));
+  res.end(await renderTemplate("src/views/HomeView.hbs", { title: "Welcome" }));
 };
 
 export const getNewForm = async (req: IncomingMessage, res: ServerResponse) => {
   res.statusCode = 200;
   res.setHeader("Content-Type", "text/html");
-  res.end(await renderTemplate("src/views/NewView.hbs", { title: "Create Pokemon" }));
+  res.end(await renderTemplate("src/views/NewFormView.hbs"));
 };
 
 export const getOnePokemon = async (
@@ -36,7 +36,6 @@ export const getOnePokemon = async (
   res.setHeader("Content-Type", "text/html");
   res.end(
     await renderTemplate("src/views/ShowView.hbs", {
-		title: "One Pokemon",
       pokemon: foundPokemon,
     }),
   );
@@ -52,7 +51,12 @@ export const getAllPokemon = async (
   const sortBy = queryParams.get("sortBy");
   let pokemon: Pokemon[] = [];
 
-  pokemon = database.filter((pokemon) => pokemon.type === typeFilter);
+  // Apply basic filtering if we have a `typeFilter`:
+  if (typeFilter) {
+    pokemon = database.filter((pokemon) => pokemon.type === typeFilter);
+  } else {
+    pokemon = database;
+  }
 
   if (sortBy === "name") {
     pokemon = [...pokemon].sort((a, b) => a.name.localeCompare(b.name));
@@ -62,8 +66,7 @@ export const getAllPokemon = async (
   res.setHeader("Content-Type", "text/html");
   res.end(
     await renderTemplate("src/views/ListView.hbs", {
-      title: "All Pokemon",
-      pokemn: pokemon,
+      pokemon: pokemon,
     }),
   );
 };
@@ -89,6 +92,14 @@ export const createPokemon = async (
 
   newPokemon.id = database.length + 1; // ID "auto-increment".
   database.push(newPokemon);
+
+  // res.statusCode = 201;
+  // res.setHeader("Content-Type", "text/html");
+  // res.end(
+  //     await renderTemplate("src/views/ListView.hbs", {
+  //         pokemon: database,
+  //     }),
+  // );
 
   if (req.headers["user-agent"]?.includes("Mozilla")) {
     res.statusCode = 303;
